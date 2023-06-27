@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import styled from "styled-components";
@@ -71,21 +71,15 @@ const MovieTitleVariant = {
 }
 
 const sliderVariant = {
-    rightToLeft_start: (windowWidth: number) => ({
-        x: windowWidth + 5
+    start: (toRight: number) => ({
+        x: toRight ? window.innerWidth + 5 : -window.innerWidth- 5
     }),
-    rightToLeft_end: (windowWidth: number) => ({
-        x: -windowWidth - 5
-    }),
-    leftToRight_start: (windowWidth: number) => ({
-        x: -windowWidth - 5
-    }),
-    leftToRight_end: (windowWidth: number) => ({
-        x: windowWidth + 5
-    }),
-    animation: (windowWidth: number) => ({
-        x: 0,
-    }),
+    animate: {
+        x: 0
+    },
+    end: (toRight: number) => ({
+        x: toRight ? -window.innerWidth-5 : window.innerWidth + 5
+    })
 }
 
 interface IProps {
@@ -100,29 +94,30 @@ const CATEGORY_CODE = "A";
 function NowPlayingMovies({offset, windowWidth, onMovieBoxClicked}:IProps) {
     const [ index, setIndex ] = useState(0);
     const [ leaving, setLeaving ] = useState(false); // 애니메이션 중복발생 방지
-    const [ isNext, setIsNext ] = useState(1);
+    const [ toRight, setToRight ] = useState(true);
     const { data, isLoading } = useQuery<IGetMoviesResult>(["movies", "popular"], getNowPlayingMovies);
     const toggleLeaving = () => setLeaving(prev => !prev);
     const decreaseIndex = () => {
         if (data) {
             if(leaving) return;
             toggleLeaving();
+            setToRight(false);
             const totalMovies = data?.results.length;
             const maxIndex = Math.floor(totalMovies / offset) - 1;
             setIndex(prev => prev === 0 ? maxIndex : prev - 1);
-            setIsNext(-1);
         }
     }
     const increaseIndex = () => {
         if (data) {
             if(leaving) return;
             toggleLeaving();
+            setToRight(true);
             const totalMovies = data?.results.length;
             const maxIndex = Math.floor(totalMovies / offset) - 1;
             setIndex(prev => prev===maxIndex ? 0 : prev + 1);
-            setIsNext(1);
         }
     }
+
     return (
         
         <>
@@ -130,14 +125,14 @@ function NowPlayingMovies({offset, windowWidth, onMovieBoxClicked}:IProps) {
         <h2>Now playing Movies is Loading...</h2>
         :
         <>
-        <SliderBtn increaseIndex={increaseIndex} decreaseIndex={decreaseIndex} />
-        <AnimatePresence initial={false} onExitComplete={toggleLeaving} custom={windowWidth}>
+        <SliderBtn decreaseIndex={decreaseIndex} increaseIndex={increaseIndex} />
+        <AnimatePresence initial={false} onExitComplete={toggleLeaving} custom={toRight}>
             <Slider
-              custom={windowWidth}
+              custom={toRight}
               variants={sliderVariant}
-              initial={isNext === 1? "rightToLeft_start" : "leftToRight_start"}
-              animate="animation"
-              exit={isNext === 1 ? "rightToLeft_end" : "leftToRight_end"}
+              initial="start"
+              animate="animate"
+              exit="end"
               transition={{type: "tween", duration: 2}}
               key={index}
             >

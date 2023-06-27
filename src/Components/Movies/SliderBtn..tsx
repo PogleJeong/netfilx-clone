@@ -57,8 +57,8 @@ const Icon = styled.svg`
 `;
 
 interface IBtnEvent {
-    increaseIndex: React.MouseEventHandler<HTMLDivElement>;
     decreaseIndex: React.MouseEventHandler<HTMLDivElement>;
+    increaseIndex: React.MouseEventHandler<HTMLDivElement>;
 }
 
 function SliderBtn({decreaseIndex, increaseIndex}:IBtnEvent) {

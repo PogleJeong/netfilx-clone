@@ -10,6 +10,10 @@ export interface IMovie {
     poster_path: string;
     title: string;
     overview: string;
+    release_date: string;
+    vote_average: number;
+    vote_count: number;
+    genre_ids: number[];
 };
 
 export interface IGetMoviesResult {
@@ -20,6 +24,15 @@ export interface IGetMoviesResult {
     page: number;
     results: IMovie[];
 };
+
+interface IGenreList {
+    id: number;
+    name: string;
+}
+
+export interface IGetGenreList {
+    genres: IGenreList[]
+}
 
 export async function getNowPlayingMovies() {
     const LANGUAGE = "ko";
@@ -49,6 +62,11 @@ export const getUpcomingMovies = async () => {
     return reponse.data;
 }
 
+export const getGenreList =async () => {
+    const LANGUAGE ="ko";
+    const response = await axios.get(`${BASE_URL}/genre/movie/list?language=${LANGUAGE}&api_key=${API_KEY}`);
+    return response.data;
+}
 // Tv Series
 
 interface ITvSeries {

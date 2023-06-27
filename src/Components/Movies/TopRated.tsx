@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { styled } from "styled-components";
@@ -70,6 +70,19 @@ const MovieTitleVariant = {
     }
 }
 
+// custom 속성을 사용하여 슬라이드 자연스러움 주기
+const sliderVariant = {
+    start: (toRight: number) => ({
+        x: toRight ? window.innerWidth + 5 : -window.innerWidth- 5
+    }),
+    animate: {
+        x: 0
+    },
+    end: (toRight: number) => ({
+        x: toRight ? -window.innerWidth-5 : window.innerWidth + 5
+    })
+}
+
 interface IProps {
     offset: number;
     windowWidth: number;
@@ -81,13 +94,15 @@ const CATEGORY_CODE = "C";
 
 function TopRatedMovies({offset, windowWidth, onMovieBoxClicked}:IProps) {
     const [ index, setIndex ] = useState(0);
-    const [ leaving, setLeaving ] = useState(false); // 애니메이션 중복발생 방지   
+    const [ leaving, setLeaving ] = useState(false); // 애니메이션 중복발생 방지
+    const [ toRight, setToRight ] = useState(true);   
     const { data, isLoading } = useQuery<IGetMoviesResult>(['movies','top_rated'], getTopRatedMovies);
     const toggleLeaving = () => setLeaving(prev => !prev);
     const decreaseIndex = () => {
         if (data) {
             if(leaving) return;
             toggleLeaving();
+            setToRight(false);
             const totalMovies = data?.results.length;
             const maxIndex = Math.floor(totalMovies / offset) - 1;
             setIndex(prev => prev === 0 ? maxIndex : prev - 1);
@@ -97,23 +112,28 @@ function TopRatedMovies({offset, windowWidth, onMovieBoxClicked}:IProps) {
         if (data) {
             if(leaving) return;
             toggleLeaving();
+            setToRight(true);
             const totalMovies = data?.results.length;
             const maxIndex = Math.floor(totalMovies / offset) - 1;
             setIndex(prev => prev===maxIndex ? 0 : prev + 1);
         }
     }
+    // 슬라이드 기능에서 반대방향으로 작동하면 애니메이션이 이전 variants 를 참고하여 부자연스럽게 작동함.
+   
     return(
         <>
         {isLoading ? 
         <h2>Top Rated Movies is Loading...</h2>
         :
         <>
-        <SliderBtn decreaseIndex={decreaseIndex} increaseIndex={increaseIndex} />
-        <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+        <SliderBtn decreaseIndex={decreaseIndex} increaseIndex={increaseIndex}  />
+        <AnimatePresence initial={false} onExitComplete={toggleLeaving} custom={toRight}>
             <Slider
-              initial={{x: windowWidth + 5}}
-              animate={{x: 0}}
-              exit={{x: -windowWidth - 5}}
+              custom={toRight}
+              variants={sliderVariant}
+              initial="start"
+              animate="animate"
+              exit="end"
               transition={{type: "tween", duration: 2}}
               key={index}
             >

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { styled } from "styled-components";
+import styled from "styled-components";
 
-import { IGetMoviesResult, getUpcomingMovies } from "../../api";
-import SliderBtn from "./SliderBtn.";
+import { IGetMoviesResult, getNowPlayingMovies } from "../../api";
 import { makeImagePath } from "../../util";
+import SliderBtn from "./SliderBtn.";
 
 const Slider = styled(motion.div)`
     position: absolute;
@@ -89,19 +89,18 @@ interface IProps {
 }
 
 // 같은 영화가 있을 경우 애니메이션이 하나만 적용되면서 다른 카테고리의 동일 영화가 빠져나감.
-const CATEGORY_CODE = "D";
+const CATEGORY_CODE = "A";
 
-function UpcomingMovies({offset, windowWidth, onMovieBoxClicked}:IProps) {
+function NowPlayingMovies({offset, windowWidth, onMovieBoxClicked}:IProps) {
     const [ index, setIndex ] = useState(0);
-    const [ leaving, setLeaving ] = useState(false); // 애니메이션 중복발생 방지   
-    const [ toRight,  setToRight ] = useState(true);
-    const { data, isLoading } = useQuery<IGetMoviesResult>(['movies','upcoming'], getUpcomingMovies);
+    const [ leaving, setLeaving ] = useState(false); // 애니메이션 중복발생 방지
+    const [ toRight, setToRight ] = useState(1);
+    const { data, isLoading } = useQuery<IGetMoviesResult>(["movies", "popular"], getNowPlayingMovies);
     const toggleLeaving = () => setLeaving(prev => !prev);
     const decreaseIndex = () => {
         if (data) {
             if(leaving) return;
             toggleLeaving();
-            setToRight(false);
             const totalMovies = data?.results.length;
             const maxIndex = Math.floor(totalMovies / offset) - 1;
             setIndex(prev => prev === 0 ? maxIndex : prev - 1);
@@ -111,17 +110,25 @@ function UpcomingMovies({offset, windowWidth, onMovieBoxClicked}:IProps) {
         if (data) {
             if(leaving) return;
             toggleLeaving();
-            setToRight(true);
             const totalMovies = data?.results.length;
             const maxIndex = Math.floor(totalMovies / offset) - 1;
             setIndex(prev => prev===maxIndex ? 0 : prev + 1);
         }
     }
- 
-    return(
+
+    // 슬라이드 기능에서 반대방향으로 작동하면 애니메이션이 이전 variants 를 참고하여 부자연스럽게 작동함.
+    useEffect(()=> {
+        // toRight = 1 : 다음방향버튼
+        // toRight = -1 : 이전방향버튼
+        if(toRight === 1) increaseIndex;
+        else decreaseIndex;
+    },[toRight])
+
+    return (
+        
         <>
         {isLoading ? 
-        <h2>Upcoming Movies is Loading...</h2>
+        <h2>Now playing Movies is Loading...</h2>
         :
         <>
         <SliderBtn decreaseIndex={decreaseIndex} increaseIndex={increaseIndex}  />
@@ -164,4 +171,4 @@ function UpcomingMovies({offset, windowWidth, onMovieBoxClicked}:IProps) {
     )
 }
 
-export default React.memo(UpcomingMovies);
+export default React.memo(NowPlayingMovies);

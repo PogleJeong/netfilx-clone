@@ -14,6 +14,7 @@ import { makeImagePath, useWindowDimensions } from "../util";
 
 import prevIcon from "../Image/prev.png";
 import nextIcon from "../Image/next.png";
+import MovieDetail from "../Components/Movies/MovieDetail";
 
 const Wrapper = styled.div`
     background-color: black;
@@ -205,7 +206,6 @@ function Home() {
     bigMovieMatch?.params.movieId &&
     nowPlayingData?.results.find((movie) => String(movie.id) === String(bigMovieMatch.params.movieId).slice(0,-1));
 
-    console.log(clickedMovie);
     return(
         <Wrapper>
         {nowPlayingLoading ? 
@@ -247,19 +247,7 @@ function Home() {
             {bigMovieMatch ? 
                 <>
                 <Overlay onClick={onOverlayClicked}/>
-                <DetailBox
-                  layoutId={bigMovieMatch.params.movieId}
-                >
-                {clickedMovie ?
-                <>
-                <DetailCover imagepath={makeImagePath(clickedMovie.backdrop_path, "w500")} />
-                <DetailTitle>{clickedMovie.title}</DetailTitle>
-                <DetailOverview>{clickedMovie.overview}</DetailOverview>
-                </>
-                :
-                null
-                }
-                </DetailBox>
+                <MovieDetail id={bigMovieMatch.params.movieId || ""} clickedMovie={clickedMovie || ""}/>
                 </>
                 :
                 null
