@@ -34,7 +34,7 @@ const Banner = styled.div<{bgphoto: string}>`
     justify-content: center;
     height: 100vh;
     padding: 60px;
-    background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)),
+    background-image: linear-gradient( rgba(0, 0, 0, 1),rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)),
     url(${props => props.bgphoto});
     background-size: cover;
 `

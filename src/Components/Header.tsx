@@ -76,8 +76,11 @@ const Search = styled.form`
 `;
 
 const Input = styled(motion.input)`
-  transform-origin: right center;
   position: absolute;
+  transform-origin: right center;
+  height: 30px;
+  padding-left: 10px;
+  border-radius: 3px;
   left: -150px;
 `;
 
@@ -115,6 +118,8 @@ function Header() {
   const { scrollY } = useScroll(); // 스크롤감지 애니메이션
   const { register, handleSubmit } = useForm<IForm>(); // useForm (typescript)
   const navigate = useNavigate(); // 검색후 router 이동
+
+  // 컴포넌트 내 함수를 이용한 useAnimation
   const toggleSearch = () => {
     if(searchOpen) {
        inputAnimation.start({
@@ -177,6 +182,7 @@ function Header() {
           />
           <motion.svg
               onClick={toggleSearch}
+              whileHover={{cursor: "pointer"}}
               animate={{ x: searchOpen ? -185 : 0 }}
               transition={{ type: "linear" }}
               fill="currentColor"
