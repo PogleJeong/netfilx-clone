@@ -30,19 +30,6 @@ interface IGenreList {
     name: string;
 }
 
-// search by keyword
-interface ISearchByKeywordResult {
-    id: number;
-    name: string;
-}
-
-interface IGetSearchByKeyword {
-    page: number;
-    results: ISearchByKeywordResult[];
-    total_pages: number;
-    total_results: number;
-}
-
 export interface IGetGenreList {
     genres: IGenreList[]
 }
@@ -113,25 +100,19 @@ export async function getTvSeriesPopular() {
     return reponse.data;
 }
 
-/** 검색기능 api */
+/** 검색기능 api 
+ * 잘 보고쓰자
+ * 
+*/
 export const getKeywordMovies = async(keyword: string) => {
-    let movies: IGetMoviesResult[] = [];
-    const page = 1;
-    const response = await axios.get(`${BASE_URL}/search/keyword?query=${keyword}}&page=${page}&api_key=${API_KEY}`);
-    const searchByKeywordResult: IGetSearchByKeyword = response.data; // 변수에 타입 정의
-    searchByKeywordResult.results.map(async (result)=>{ // 검색결과로 나온 movie id 를 가지고 영화상세정보를 검색뒤 결과를 담은 배열을 반환
-        console.log(result);
-        let getMovieInfo = await getMoviesById(result.id); //map 함수 안에서도 async, await 비동기 함수 처리.
-        console.log(getMovieInfo);
-        movies.push(getMovieInfo);
-    });
-    return movies;
-
+   if (!keyword) return;
+   const include_adult = false;
+   const LANGUAGE = "ko-KR";
+   const page = 1;
+   const primary_release_year = 0;
+   const region = "";
+   const year = 0;
+   const response = await axios.get(`${BASE_URL}/search/movie?query=${keyword}&include_adult=${include_adult}&language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`);
+   return response.data;
 }
 
-const getMoviesById = async(id: number) => {
-    const SOURCE = "imdb_id";
-    const LANGUAGE = "en";
-    const response = await axios.get(`${BASE_URL}/find/${id}?external_source=${SOURCE}&language=${LANGUAGE}&api_key=${API_KEY}`);
-    return response.data;
-}
