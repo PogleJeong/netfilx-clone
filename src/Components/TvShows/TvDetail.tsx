@@ -1,12 +1,11 @@
 import { motion } from "framer-motion";
 import { styled } from "styled-components";
+import { IGetGenreList, ITvSeries, getTvShowGenreList } from "../../api";
 import { makeImagePath } from "../../util";
-import { IGetGenreList, IMovie, getGenreList } from "../../api";
 import { useQuery } from "react-query";
 
 const DetailBox = styled(motion.div)`
     position: fixed;
-    overflow: scroll;
     top: 10%;
     left: 30%;
     width: 40vw;
@@ -87,54 +86,47 @@ const DetailOverview = styled.p`
   }
 `;
 
-interface IMovieDetail {
+interface ITvDetail {
     id: string;
-    clickedMovie: IMovie | "";
+    clickedTvShow: ITvSeries | null;
 }
 
-function MovieDetail({id, clickedMovie}: IMovieDetail) {
-  const { data, isLoading } = useQuery<IGetGenreList>(["movies","genre_list"],getGenreList);
-  
-  return(
-      <DetailBox layoutId={id}>
-          {clickedMovie ? 
-          <>
-          <DetailCover imagepath={makeImagePath(clickedMovie.backdrop_path, "w500")} >
-            <DetailTitle>{clickedMovie.title}</DetailTitle>
-          </DetailCover>
-          <DetailInfo>
-            <Poster poster={makeImagePath(clickedMovie.poster_path)}/>
-            <InfoHeader>
-              <span>개봉일자</span>
-              <span>{clickedMovie.release_date}</span>
-              <span>평점</span>
-              <span>
-                ★
-                {clickedMovie.vote_average}
-                ({clickedMovie.vote_count})</span>
-              <span>장르</span>
-              <div>
-                {isLoading ?
-                null
-                :
-                clickedMovie.genre_ids.map((id,index)=>(
-                  <span key={index}>{data?.genres.filter((item)=> item.id === id)[0].name}</span>
-                ))
-                }
-              </div>
-            </InfoHeader>
+function TvDetail({id, clickedTvShow}:ITvDetail){
+    const { data, isLoading } = useQuery<IGetGenreList>(["tvShow","genres_list"],getTvShowGenreList)
+
+    return (
+        <DetailBox layoutId={id}>
+            <DetailCover imagepath={makeImagePath(clickedTvShow?.backdrop_path || "")} >
+                <DetailTitle>{clickedTvShow?.name}</DetailTitle>
+            </DetailCover>
             
-            <DetailOverview>
-              <h4>[ 줄거리 요약 ]</h4>
-              <span>{clickedMovie.overview}</span>
-            </DetailOverview>
-          </DetailInfo>
-          </>
-          :
-          null
-          }
-      </DetailBox>
-  )
+            <DetailInfo>
+                <Poster poster={makeImagePath(clickedTvShow?.poster_path || "")}/>
+                <InfoHeader>
+                <span>첫방영</span>
+                <span>{clickedTvShow?.first_air_date}</span>
+                <span>평점</span>
+                <span>
+                    ★
+                    {clickedTvShow?.vote_average}
+                    ({clickedTvShow?.vote_count})</span>
+                <span>장르</span>
+                <div>
+                    {isLoading ?
+                    null
+                    :
+                    clickedTvShow?.genre_ids.map((id,index)=>(
+                    <span key={index}>{data?.genres.filter((item)=> item.id === id)[0].name}</span>
+                    ))
+                    }
+                </div>
+                </InfoHeader>
+                <DetailOverview>
+                    {clickedTvShow?.overview}
+                </DetailOverview>
+            </DetailInfo>
+        </DetailBox>
+    );
 }
 
-export default MovieDetail;
+export default TvDetail;

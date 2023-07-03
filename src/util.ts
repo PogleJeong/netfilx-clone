@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { IGetTvSeriesResult, getAiringTodayTvSeries, getOnAirTvSeries, getPopularTvSeries, getTopRatedTvSeries } from "./api";
+import { useQuery } from "react-query";
 
 
 // helper function 모음
@@ -33,4 +35,32 @@ export function useWindowDimensions() {
     return () => window.removeEventListener('resize', handleResize);
     }, []);
     return windowDimensions;
+}
+
+export enum TvShowSeparate {
+    POPULAR = "popular",
+    ON_AIR = "on_air",
+    AIRING_TODAY = "airing_today",
+    TOP_RATED = "top_rated",
+}
+
+export const useGetTvShowData = (separate: TvShowSeparate) => {
+    const [ data, setData ] = useState<any>();
+    
+    useEffect(()=>{
+        if(separate === TvShowSeparate.AIRING_TODAY) {
+            const result = getAiringTodayTvSeries;
+            setData(result);
+        } else if(separate === TvShowSeparate.ON_AIR) {
+            const result = getOnAirTvSeries;
+            setData(result);
+        } else if (separate === TvShowSeparate.POPULAR) {
+            const result = getPopularTvSeries;
+            setData(result);
+        } else if (separate === TvShowSeparate.TOP_RATED) {
+            const result = getTopRatedTvSeries;
+            setData(result);
+        } 
+    })
+    return data;
 }

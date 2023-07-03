@@ -1,11 +1,12 @@
 import { useQuery } from "react-query";
 import { styled } from "styled-components";
 
-import { IGetTvSeriesResult, getTvSeriesPopular } from "../api";
+import { IGetTvSeriesResult, ITvSeries, getTvSeriesPopular } from "../api";
 import { makeImagePath } from "../util";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMatch, useNavigate } from "react-router-dom";
+import TvDetail from "../Components/TvShows/TvDetail";
 
 const Wrapper = styled.div`
     height: 200vh;
@@ -75,16 +76,6 @@ const Overlay = styled(motion.div)`
     background-color: rgba(0,0,0,0.5);
 `;
 
-const DetailInfo = styled(motion.div)`
-    position: fixed;
-    top: 20%;
-    left: 30%;
-    width: 40vw;
-    height: 80vh;
-    border-radius: 10px;
-    background-color: ${(props) => props.theme.black.lighter};
-`
-
 const tvShowVariants = {
     normal: {
         scale: 1,
@@ -118,18 +109,18 @@ const offset = 6; // 한줄에 보여줄 영화개수.
 
 function Tv() {
     const { data, isLoading } = useQuery<IGetTvSeriesResult>(["TV","Series","Popular"],getTvSeriesPopular)
+    const [ clickedTvShow, setClickedTvShow ] = useState<ITvSeries>();
     const [ index, setIndex ] = useState(0);
     const [ leaving, setLeaving ] = useState(false);
     const navigate = useNavigate();
     const tvMatch = useMatch("/tv/:id") // tvMatch 안에 여러 정보
     const toggleLeave = () => setLeaving((prev)=>!prev);
-    const clickedTvShow = (id: number) => {
+    const clickTvShowInfo = (id: number) => {
         navigate(`/tv/${id}`);
     }
     const onOverlayClicked = () => {
         navigate(`/tv`);
     }
-    
     return(
         <Wrapper>
             <Banner bgimage={makeImagePath(data?.results[0].backdrop_path! || "")}>
@@ -150,8 +141,11 @@ function Tv() {
                           whileHover="hover"
                           transition={{type: "tween"}}
                           key={tvShow.id}
-                          onClick={()=>clickedTvShow(tvShow.id)}
-                          layoutId={tvShow.id+""} // layout id 는 string 만 간으
+                          onClick={()=>{
+                            setClickedTvShow(tvShow);
+                            clickTvShowInfo(tvShow.id);
+                          }}
+                            layoutId={tvShow.id+""} // layout id 는 string 만 간으
                         >
                             <TvShowTitle
                               variants={tvShowTitleVariants}  
@@ -168,9 +162,7 @@ function Tv() {
                 {tvMatch ?
                 <>
                 <Overlay onClick={onOverlayClicked}/>
-                <DetailInfo layoutId={tvMatch.params.id}>
-
-                </DetailInfo>
+                <TvDetail id={tvMatch.params.id || ""} clickedTvShow={clickedTvShow || null}/>
                 </>
                 :
                 null

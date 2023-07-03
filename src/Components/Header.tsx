@@ -58,9 +58,8 @@ const Circle = styled(motion.span)`
   width: 10px;
   height: 10px;
   border-radius: 5px;
-  bottom: -10px;
-  left: 0;
-  right: 0;
+  top: -5px;
+  right: -5px;
   margin: 0 auto;
   background-color: ${(props)=>props.theme.red};
 `

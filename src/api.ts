@@ -69,7 +69,7 @@ export const getGenreList =async () => {
 }
 // Tv Series
 
-interface ITvSeries {
+export interface ITvSeries {
     backdrop_path: string;
     first_air_date: string;
     genre_ids: number[];
@@ -80,7 +80,7 @@ interface ITvSeries {
     overview: string;
     popularity: number;
     poster_path: string;
-    vate_average: number;
+    vote_average: number;
     vote_count: number;
 };
 
@@ -91,6 +91,13 @@ export interface IGetTvSeriesResult {
     total_results: number;
 }
 
+export interface ITvSeriesGenreList {
+    genres: {
+        id: number;
+        name: string;
+    }[]
+}
+
 export async function getTvSeriesPopular() {
     const adult = true;
     const LANGUAGE = "ko";
@@ -98,6 +105,43 @@ export async function getTvSeriesPopular() {
     const SORT_BY = "popularity.desc";
     const reponse = await axios.get(`${BASE_URL}/discover/tv?include_adult=${adult}&language=${LANGUAGE}&page=${page}&sort_by=${SORT_BY}&api_key=${API_KEY}`);
     return reponse.data;
+}
+
+export const getAiringTodayTvSeries =async () => {
+    const LANGUAGE = "ko-KR";
+    const page = 1;
+    const response = await axios.get(`${BASE_URL}/airing_today?language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`)
+    return response.data;
+}
+
+export const getOnAirTvSeries =async () => {
+    const LANGUAGE = "ko-KR";
+    const page = 1;
+    const response = await axios.get(`${BASE_URL}/on_the_air?language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`)
+    return response.data;
+}
+
+export const getPopularTvSeries =async () => {
+    const LANGUAGE = "ko-KR";
+    const page = 1;
+    const response = await axios.get(`${BASE_URL}/popular?language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`)
+    return response.data;
+}
+
+export const getTopRatedTvSeries =async () => {
+    const LANGUAGE = "ko-KR";
+    const page = 1;
+    const response = await axios.get(`${BASE_URL}/top_rated?language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`)
+    return response.data;
+}
+
+
+
+/** tv show 에서 사용되는 장르 리스트 */
+export const getTvShowGenreList = async() => {
+    const LANGUAGE = "ko";
+    const response = await axios.get(`${BASE_URL}/genre/tv/list?language=${LANGUAGE}&api_key=${API_KEY}`)
+    return response.data;
 }
 
 /** 검색기능 api 
@@ -115,4 +159,6 @@ export const getKeywordMovies = async(keyword: string) => {
    const response = await axios.get(`${BASE_URL}/search/movie?query=${keyword}&include_adult=${include_adult}&language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`);
    return response.data;
 }
+
+
 

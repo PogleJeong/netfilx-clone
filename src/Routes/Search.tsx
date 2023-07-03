@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { IGetMoviesResult, getKeywordMovies } from "../api";
 import { makeImagePath } from "../util";
 import { AnimatePresence, motion } from "framer-motion";
+import MovieDetail from "../Components/Search/MovieDetail";
 
 const Wrapper = styled.div`
     position: relative;
@@ -30,7 +31,7 @@ const ResultList = styled.div`
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(8, 200px);
     gap: 20px;
-    height: 200vh;
+    max-height: 100vh;
 `
 
 const MovieInfo = styled.div<{bgimage: string}>`
@@ -146,6 +147,7 @@ const detailBoxVariants = {
         scaleX: 0,
     }
 }
+
 function Search() {
     // 쿼리스트링을 통해 영화정보를 가져옴.
     const [ searchParams ] = useSearchParams();
@@ -156,7 +158,6 @@ function Search() {
     const clickMovieInfo = (movieId: number) => {
         navigate({pathname: `/search/${movieId}`, search: `?keyword=${keyword}`}); // 기존경로 + 기존쿼리스트링
     }
-    const backToMain = () => navigate({pathname: `/search`, search: `?keyword=${keyword}`})
     const clickedMovie = searchMatch?.params.movieId && data?.results.find((movie)=> movie.id === +searchMatch?.params.movieId!);
     
 
@@ -181,27 +182,7 @@ function Search() {
             }
             <AnimatePresence>
                 {searchMatch && clickedMovie?
-                <DetailBox
-                  variants={detailBoxVariants}
-                  initial="start"
-                  animate="animate"
-                  exit="end"
-                >
-                    <h2>{clickedMovie.title}</h2>
-                    <DetailPoster poster={makeImagePath(clickedMovie.poster_path)} />
-                    <DetailInfo>
-                        <h2>개봉일자</h2>
-                        <span>{clickedMovie.release_date}</span>
-                        <h2>평점</h2>
-                        <span>{clickedMovie.vote_average}({clickedMovie.vote_count})</span>
-                        <h2>장르</h2>
-                        <div>{clickedMovie.genre_ids.map((genre)=><span>{genre}</span>)}</div>
-                    </DetailInfo>
-                    <DetailOverview>
-                        <span>{clickedMovie.overview}</span>
-                    </DetailOverview>
-                    <ExitBtn onClick={backToMain}>확인</ExitBtn>
-                </DetailBox>
+                <MovieDetail clickedMovie={clickedMovie} navigate={navigate} keyword={keyword || ""}/>
                 :
                 null
                 }
