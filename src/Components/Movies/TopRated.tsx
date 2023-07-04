@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { styled } from "styled-components";
@@ -92,7 +92,7 @@ interface IProps {
 // 같은 영화가 있을 경우 애니메이션이 하나만 적용되면서 다른 카테고리의 동일 영화가 빠져나감.
 const CATEGORY_CODE = "C";
 
-function TopRatedMovies({offset, windowWidth, onMovieBoxClicked}:IProps) {
+function TopRatedMovies({offset, onMovieBoxClicked}:IProps) {
     const [ index, setIndex ] = useState(0);
     const [ leaving, setLeaving ] = useState(false); // 애니메이션 중복발생 방지
     const [ toRight, setToRight ] = useState(true);   

@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { IGetTvSeriesResult, getAiringTodayTvSeries, getOnAirTvSeries, getPopularTvSeries, getTopRatedTvSeries } from "./api";
-import { useQuery } from "react-query";
-
+import { IGetTvSeriesResult, ITvSeries, getAiringTodayTvSeries, getOnAirTvSeries, getPopularTvSeries, getTopRatedTvSeries } from "./api";
 
 // helper function 모음
 /**
@@ -46,21 +44,22 @@ export enum TvShowSeparate {
 
 export const useGetTvShowData = (separate: TvShowSeparate) => {
     const [ data, setData ] = useState<any>();
-    
     useEffect(()=>{
+        let result;
         if(separate === TvShowSeparate.AIRING_TODAY) {
-            const result = getAiringTodayTvSeries;
-            setData(result);
+            result = getAiringTodayTvSeries();
         } else if(separate === TvShowSeparate.ON_AIR) {
-            const result = getOnAirTvSeries;
-            setData(result);
+            result = getOnAirTvSeries(); 
         } else if (separate === TvShowSeparate.POPULAR) {
-            const result = getPopularTvSeries;
-            setData(result);
+            result = getPopularTvSeries(); 
         } else if (separate === TvShowSeparate.TOP_RATED) {
-            const result = getTopRatedTvSeries;
-            setData(result);
-        } 
-    })
+            result = getTopRatedTvSeries(); 
+        }
+        result?.then((item)=>{ // 외부함수를 통해 불러온 데이터는 Promise 객체로 변환되므로 해당 객체 안의 값을 가져와야함
+            setData(item);
+        })
+        
+    },[])
+    console.log(data);
     return data;
 }

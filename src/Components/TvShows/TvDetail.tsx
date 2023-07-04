@@ -6,6 +6,8 @@ import { useQuery } from "react-query";
 
 const DetailBox = styled(motion.div)`
     position: fixed;
+    overflow: scroll;
+    z-index: 10;
     top: 10%;
     left: 30%;
     width: 40vw;
@@ -92,7 +94,7 @@ interface ITvDetail {
 }
 
 function TvDetail({id, clickedTvShow}:ITvDetail){
-    const { data, isLoading } = useQuery<IGetGenreList>(["tvShow","genres_list"],getTvShowGenreList)
+    const { data, isLoading } = useQuery<IGetGenreList>(["tvShow","genres_list"], getTvShowGenreList)
 
     return (
         <DetailBox layoutId={id}>

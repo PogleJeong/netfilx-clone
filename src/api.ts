@@ -110,28 +110,29 @@ export async function getTvSeriesPopular() {
 export const getAiringTodayTvSeries =async () => {
     const LANGUAGE = "ko-KR";
     const page = 1;
-    const response = await axios.get(`${BASE_URL}/airing_today?language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`)
+    const response = await axios.get(`${BASE_URL}/tv/airing_today?language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`);
+    console.log(response.data);
     return response.data;
 }
 
 export const getOnAirTvSeries =async () => {
     const LANGUAGE = "ko-KR";
     const page = 1;
-    const response = await axios.get(`${BASE_URL}/on_the_air?language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`)
+    const response = await axios.get(`${BASE_URL}/tv/on_the_air?language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`);
     return response.data;
 }
 
 export const getPopularTvSeries =async () => {
     const LANGUAGE = "ko-KR";
     const page = 1;
-    const response = await axios.get(`${BASE_URL}/popular?language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`)
+    const response = await axios.get(`${BASE_URL}/tv/popular?language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`);
     return response.data;
 }
 
 export const getTopRatedTvSeries =async () => {
     const LANGUAGE = "ko-KR";
     const page = 1;
-    const response = await axios.get(`${BASE_URL}/top_rated?language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`)
+    const response = await axios.get(`${BASE_URL}/tv/top_rated?language=${LANGUAGE}&page=${page}&api_key=${API_KEY}`);
     return response.data;
 }
 
